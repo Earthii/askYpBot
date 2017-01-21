@@ -12,7 +12,7 @@ var TWITTER_ACCESS_TOKEN = '822836654117359616-XDxeWWq66bWBK9tCIydfSuG9fWSRd6T';
 var TWITTER_ACCESS_TOKEN_SECRET = 'ghEmWdQvtNbFwxI5DzqYzM0IasyI95SLwGaPxNQfKL0jG';
 
 /* Set Twitter search phrase */
-var TWITTER_SEARCH_PHRASE = '#node OR #yp';
+var TWITTER_SEARCH_PHRASE = '#askYP2';
 
 var Twit = require('twit');
 
@@ -27,17 +27,6 @@ console.log('The bot is running...');
 
 /* BotInit() : To initiate the bot */
 function BotInit() {
-	Bot.post('statuses/retweet/:id', { id: '669520341815836672' }, BotInitiated);
-	
-	function BotInitiated (error, data, response) {
-		if (error) {
-			console.log('Bot could not be initiated, : ' + error);
-		}
-		else {
-  			console.log('Bot initiated : 669520341815836672');
-		}
-	}
-	
 	BotRetweet();
 }
 
@@ -52,29 +41,37 @@ function BotRetweet() {
 	Bot.get('search/tweets', query, BotGotLatestTweet);
 
 	function BotGotLatestTweet (error, data, response) {
-		if (error) {
+		if (error || data.statuses.length <= 0) {
 			console.log('Bot could not find latest tweet, : ' + error);
 		}
 		else {
 			var id = {
 				id : data.statuses[0].id_str
-			}
-
+			};
+			var retweetUser = data.statuses[0].user;
 			Bot.post('statuses/retweet/:id', id, BotRetweeted);
-			
+			//get info on one single tweet
+			// Bot.get('statuses/show/:id',{id:'822928111453007872'},function(err,data,res){
+			// 	console.log(data)
+			// });
 			function BotRetweeted(error, response) {
+
 				if (error) {
-					console.log('Bot could not retweet, : ' + error);
+					console.log('Bot could not retweet and already answered, : ' + error);
 				}
 				else {
 					console.log('Bot retweeted : ' + id.id);
+                    Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' Hello, Bot answered' }, function(err, data, response) {
+                        console.log('Bot answered :' + retweetUser.id_str);
+                    });
 				}
 			}
 		}
 	}
 	
-	/* Set an interval of 30 minutes (in microsecondes) */
-	setInterval(BotRetweet, 30*60*1000);
+	/* Set an interval of 1 minutes (in microsecondes) */
+
+	setInterval(BotRetweet, 1*60*1000);
 }
 
 /* Initiate the Bot */
