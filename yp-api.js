@@ -5,10 +5,6 @@ var request = require('request');
 
 class ypAPI {
 
-    constructor() {
-
-    }
-
     search(query, geo, callback) {
 
         request({
@@ -43,3 +39,5 @@ class ypAPI {
 
     }
 }
+
+module.exports = ypAPI;

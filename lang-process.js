@@ -18,9 +18,19 @@ class NathanProcessor{
         });
     }
     queryLocation(string, callback){
-
+        this.watson.entities({
+            text: string
+        }, function (err, res) {
+            if (res.entities.length > 0 && res.entities[0].type == 'City'){
+                callback(err, res.entities[0].text)
+            } else {
+                callback(err, null);
+            }
+        });
     }
 }
+
+module.exports = NathanProcessor;
 
 /**
  *  Example Code
