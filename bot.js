@@ -12,7 +12,7 @@ var TWITTER_ACCESS_TOKEN = '822836654117359616-XDxeWWq66bWBK9tCIydfSuG9fWSRd6T';
 var TWITTER_ACCESS_TOKEN_SECRET = 'ghEmWdQvtNbFwxI5DzqYzM0IasyI95SLwGaPxNQfKL0jG';
 
 /* Set Twitter search phrase */
-var TWITTER_SEARCH_PHRASE = '#node OR #yp';
+var TWITTER_SEARCH_PHRASE = '#askYP1';
 
 var Twit = require('twit');
 
@@ -27,17 +27,6 @@ console.log('The bot is running...');
 
 /* BotInit() : To initiate the bot */
 function BotInit() {
-	Bot.post('statuses/retweet/:id', { id: '669520341815836672' }, BotInitiated);
-	
-	function BotInitiated (error, data, response) {
-		if (error) {
-			console.log('Bot could not be initiated, : ' + error);
-		}
-		else {
-  			console.log('Bot initiated : 669520341815836672');
-		}
-	}
-	
 	BotRetweet();
 }
 
@@ -50,10 +39,34 @@ function BotRetweet() {
 	}
 
 	Bot.get('search/tweets', query, BotGotLatestTweet);
+    var obj = Bot.get('search/tweets', { q: '#askYP1 since:2017-01-20', count: 5 }, function(err, data, response) {
+      console.log(data);
+        for(var i = 0; i< data.statuses.length ; i++){
+        	console.log(data.statuses[i].user);
+            //printing out the geo coordinates if !null
+			if(data.statuses[i].geo != null){
+        		console.log(data.statuses[i].lat);
+        		console.log(data.statuses[i].long);
+			}
+			//printing out coordinates if !null
+			if(data.statuses[i].coordinates !=null){
+				console.log(data.statuses[i].coordinates[0][1]);
+                console.log(data.statuses[i].coordinates[0][2]);
+                console.log(data.statuses[i].coordinates[0][3]);
+                console.log(data.statuses[i].coordinates[0][4]);
+			}
+            //printing out the place if !null
+            if(data.statuses[i].place != null){
+                console.log(data.statuses[i].place);
+                console.log(data.statuses[i].place.full_name);
+                console.log();
+            }
+        }
+    });
 
 	function BotGotLatestTweet (error, data, response) {
 		if (error) {
-			console.log('Bot could not find latest tweet, : ' + error);
+				console.log('Bot could not find latest tweet, : ' + error);
 		}
 		else {
 			var id = {
