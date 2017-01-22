@@ -28,7 +28,7 @@ class ypAPI {
                 let url = '';
                 for(let j = 0; j < merchants[i].urls.length; j++){
                     if(merchants[i].urls[j].type == 'YPCA_MERCHANT_PAGE'){
-                        url = merchants[i].urls[j];
+                        url = merchants[i].urls[j].text;
                         break;
                     }
                 }
