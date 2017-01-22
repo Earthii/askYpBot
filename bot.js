@@ -105,26 +105,34 @@ function BotRetweet() {
                     console.log('no image found');
                     lgProcessor.queryProduct(tweet.text, function (err, products) {
                         var arrayOfKeyword = products;
-                        yellowPAPI.search(arrayOfKeyword[0], {long: -73.578915, lat: 45.495291}, function (err, results) {
-                            googleURL.shorten(results[0].url, function (err, shortUrl) {
-                                // shortUrl should be http://goo.gl/BzpZ54
-                                var url = shortUrl
-                                var response = 'You should visit ' + results[0].title + ' at ' + results[0].address + '.' + ' More info here: ' + url;
-                                console.log(response);
-								Bot.post('statuses/update', {status: '@' + retweetUser.screen_name + ' ' + response}, function (err, data, response) {
-								 	console.log('Bot retweeted : ' + id.id);
-								 	console.log('Bot answered :' + retweetUser.id_str);
-								});
+                        if(arrayOfKeyword.length != 0){
+                            yellowPAPI.search(arrayOfKeyword[0], {long: -73.578915, lat: 45.495291}, function (err, results) {
+                                googleURL.shorten(results[0].url, function (err, shortUrl) {
+                                    // shortUrl should be http://goo.gl/BzpZ54
+                                    var url = shortUrl
+                                    var response = 'You should visit ' + results[0].title + ' at ' + results[0].address + '.' + ' More info here: ' + url;
+                                    console.log(response);
+                                    Bot.post('statuses/update', {status: '@' + retweetUser.screen_name + ' ' + response}, function (err, data, response) {
+                                        console.log('Bot retweeted : ' + id.id);
+                                        console.log('Bot answered :' + retweetUser.id_str);
+                                    });
+
+                                });
 
                             });
-
-                        });
+                        } else {
+                            var response = 'Sorry, we couldn\'t understand your query. Please try again.';
+                            console.log(response);
+                            Bot.post('statuses/update', {status: '@' + retweetUser.screen_name + ' ' + response}, function (err, data, response) {
+                                console.log('Bot retweeted : ' + id.id);
+                                console.log('Bot answered :' + retweetUser.id_str);
+                            });
+                        }
                     });
                 }
             }
         }
     });
-
 
 }
 

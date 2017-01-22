@@ -11,8 +11,10 @@ class NathanProcessor{
             text: string
         }, function (err, res) {
             let keywords = [];
-            for(let i = 0; i < 3 && i < res.keywords.length; i++){
-                keywords.push(res.keywords[i].text);
+            if(res.keywords){
+                for(let i = 0; i < 3 && i < res.keywords.length; i++){
+                    keywords.push(res.keywords[i].text);
+                }
             }
             callback(err, keywords);
         });
