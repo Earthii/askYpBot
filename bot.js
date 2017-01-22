@@ -1,97 +1,96 @@
-/*!
- * Bot.js : A Twitter bot that can retweet in response to the tweets matching particluar keyword
- * Version 1.0.0
- * Created by Debashis Barman (http://www.debashisbarman.in)
- * License : http://creativecommons.org/licenses/by-sa/3.0
- */
-
-/* Configure the Twitter API */
-var TWITTER_CONSUMER_KEY = 'VwdTm9hKOpXYPMaymRMYPrV8k';
-var TWITTER_CONSUMER_SECRET = 'sfmbpJvHI3GNNHNI1tyllx1VRcoKRoOfLE57h9abXbdpdU7czu';
-var TWITTER_ACCESS_TOKEN = '822836654117359616-XDxeWWq66bWBK9tCIydfSuG9fWSRd6T';
-var TWITTER_ACCESS_TOKEN_SECRET = 'ghEmWdQvtNbFwxI5DzqYzM0IasyI95SLwGaPxNQfKL0jG';
-
 /* Set Twitter search phrase */
-var TWITTER_SEARCH_PHRASE = '#askYP2';
+const TWITTER_SEARCH_PHRASE = '#askYP1';
 
-var Twit = require('twit');
-var langProcess = require('./lang-process');
-var ypAPI = require('./yp-api');
+let Twit = require('twit');
+let ProcessLang = require('./lang-process');
+let YPAPI = require('./yp-api');
 
-var lgProcessor = new langProcess();
-var yellowPAPI = new ypAPI();
+let Watson = new ProcessLang('836929e582b56ff138ef55896dc5efb959fdd50b');
+let YellowPages = new YPAPI();
 
-var Bot = new Twit({
-	consumer_key: TWITTER_CONSUMER_KEY,
-	consumer_secret: TWITTER_CONSUMER_SECRET,
-	access_token: TWITTER_ACCESS_TOKEN, 
-	access_token_secret: TWITTER_ACCESS_TOKEN_SECRET
+let Bot = new Twit({
+	consumer_key: '1AqwD0kpnPrc9KYepDmJcGWA1',
+	consumer_secret: 'Ic5oqlDbwxwLyK4i62jX7r1wyGwDFhFuYcTL3CteLo8gdTLL2N',
+	access_token: '822836654117359616-G9BVWUb1PIYHTlIzeWEZOMklfdtpqpg',
+	access_token_secret: 'KyF2akBMlNOGYpJ59MMhYua5gmYkfggrFOCMe5KmaV6Jf'
 });
 
-console.log('The bot is running...');
+console.log('The yellow people\'s bot is running...');
 
-/* BotInit() : To initiate the bot */
-function BotInit() {
-	BotRetweet();
-}
+let stream = Bot.stream('statuses/filter', {track:[TWITTER_SEARCH_PHRASE]});
 
-/* BotRetweet() : To retweet the matching recent tweet */
-function BotRetweet() {
+stream.on('message', function (msg) {
+    console.log("NEW TWEET FAM");
+    console.log(JSON.stringify(msg, null, 2));
 
-	var query = {
-		q: TWITTER_SEARCH_PHRASE,
-		result_type: "recent"
+    let newTweet = [];
+    newTweet.push({
+        tweetId:msg.user.id,
+        username:msg.screen_name,
+		message:msg.text
+    });
+
+    if(msg.geo){
+    	// Get results from yp directly...
+		var keyword = Watson.queryProduct(msg.text, function(err, keywords){
+
+		});
+
+	} else {
+    	// Ask for postal code...
 	}
+});
 
-	Bot.get('search/tweets', query, BotGotLatestTweet);
-
-	function BotGotLatestTweet (error, data, response) {
-		if (error || data.statuses.length <= 0) {
-			console.log('Bot could not find latest tweet, : ' + error);
-		}
-		else {
-            var tweet = data.statuses[0];
-			var id = {
-				id : data.statuses[0].id_str
-			};
-            var retweetUser = data.statuses[0].user;
-			Bot.post('statuses/retweet/:id', id, BotRetweeted);
-
-			//get info on one single tweet
-			// Bot.get('statuses/show/:id',{id:'822928111453007872'},function(err,data,res){
-			// 	console.log(data)
-			// });
-
-			function BotRetweeted(error, response) {
-				if (error) {
-					console.log('Bot could not retweet and already answered, : ' + error);
-				}
-				else {
-					// if(tweet.place)
-					// 	Bot.get('geo/id/:id',{id:tweet.place.id},function(err,data,res){
-					// 		console.log(data.bounding_box.coordinates);
-					// 	})
-                    lgProcessor.queryProduct(tweet.text,function(err,products){
-                    	var arrayOfKeyword = products;
-                        yellowPAPI.search(arrayOfKeyword[0],{long:-73.553,lat:45.087},function(err,results){
-							var response = results[0].title + ' at '+results[0].address+'.'+' Their Website is '+ results[0].url;
-                            Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' '+response}, function(err, data, response) {
-                                console.log('Bot retweeted : ' + id.id);
-                                console.log('Bot answered :' + retweetUser.id_str);
-                            });
-						});
-					});
-
-
-				}
-			}
-		}
-	}
-	
-	/* Set an interval of 10 minutes (in microsecondes) */
-
-	setInterval(BotRetweet, 10*60*1000);
-}
-
-/* Initiate the Bot */
-BotInit();
+// let query = {
+//     q: TWITTER_SEARCH_PHRASE,
+//     result_type: "recent"
+// }
+//
+// Bot.get('search/tweets', query, BotGotLatestTweet);
+//
+// function BotGotLatestTweet(error, data, response) {
+//     if (error || data.statuses.length <= 0) {
+//         console.log('Bot could not find latest tweet, : ' + error);
+//     }
+//     else {
+//         let tweet = data.statuses[0];
+//         let id = {
+//             id: data.statuses[0].id_str
+//         };
+//         let retweetUser = data.statuses[0].user;
+//         Bot.post('statuses/retweet/:id', id, BotRetweeted);
+//
+//         //get info on one single tweet
+//         // Bot.get('statuses/show/:id',{id:'822928111453007872'},function(err,data,res){
+//         // 	console.log(data)
+//         // });
+//
+//         function BotRetweeted(error, response) {
+//             if (error) {
+//                 console.log('Bot could not retweet and already answered, : ' + error);
+//             }
+//             else {
+//                 // if(tweet.place)
+//                 // 	Bot.get('geo/id/:id',{id:tweet.place.id},function(err,data,res){
+//                 // 		console.log(data.bounding_box.coordinates);
+//                 // 	})
+//                 lgProcessor.queryProduct(tweet.text, function (err, products) {
+//                     let arrayOfKeyword = products;
+//                     yellowPAPI.search(arrayOfKeyword[0], {long: -73.553, lat: 45.087}, function (err, results) {
+//                         let response = results[0].title + ' at ' + results[0].address + '.' + ' Their Website is ' + results[0].url;
+//                         Bot.post('statuses/update', {status: '@' + retweetUser.screen_name + ' ' + response}, function (err, data, response) {
+//                             console.log('Bot retweeted : ' + id.id);
+//                             console.log('Bot answered :' + retweetUser.id_str);
+//                         });
+//                     });
+//                 });
+//
+//
+//             }
+//         }
+//     }
+// }
+/* Set an interval of 10 minutes (in microsecondes) */
+/*
+ setInterval(BotRetweet, 10*60*1000);
+ */

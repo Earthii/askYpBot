@@ -1,9 +1,9 @@
 let AlchemyLanguageV1 = require('watson-developer-cloud/alchemy-language/v1');
 
 class NathanProcessor{
-    constructor(){
+    constructor(api_key){
         this.watson = new AlchemyLanguageV1({
-            api_key: '836929e582b56ff138ef55896dc5efb959fdd50b'
+            api_key: api_key
         });
     }
     queryProduct(string, callback){

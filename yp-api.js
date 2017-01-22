@@ -6,7 +6,6 @@ var request = require('request');
 class ypAPI {
 
     search(query, geo, callback) {
-
         request({
             url: "http://hackaton.ypcloud.io/search",
             method: "POST",
