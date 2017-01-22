@@ -6,21 +6,32 @@
  */
 
 /* Configure the Twitter API */
-var TWITTER_CONSUMER_KEY = 'VwdTm9hKOpXYPMaymRMYPrV8k';
-var TWITTER_CONSUMER_SECRET = 'sfmbpJvHI3GNNHNI1tyllx1VRcoKRoOfLE57h9abXbdpdU7czu';
-var TWITTER_ACCESS_TOKEN = '822836654117359616-XDxeWWq66bWBK9tCIydfSuG9fWSRd6T';
-var TWITTER_ACCESS_TOKEN_SECRET = 'ghEmWdQvtNbFwxI5DzqYzM0IasyI95SLwGaPxNQfKL0jG';
+var TWITTER_CONSUMER_KEY = '1AqwD0kpnPrc9KYepDmJcGWA1';
+var TWITTER_CONSUMER_SECRET = 'Ic5oqlDbwxwLyK4i62jX7r1wyGwDFhFuYcTL3CteLo8gdTLL2N';
+var TWITTER_ACCESS_TOKEN = '822836654117359616-G9BVWUb1PIYHTlIzeWEZOMklfdtpqpg';
+var TWITTER_ACCESS_TOKEN_SECRET = 'KyF2akBMlNOGYpJ59MMhYua5gmYkfggrFOCMe5KmaV6Jf';
 
 /* Set Twitter search phrase */
 var TWITTER_SEARCH_PHRASE = '#askYP2';
 
+//Dependencies
 var Twit = require('twit');
 var langProcess = require('./lang-process');
 var ypAPI = require('./yp-api');
+var Clarifai = require('clarifai');
+var GoogleURL = require('google-url');
 
+//Tools
 var lgProcessor = new langProcess();
 var yellowPAPI = new ypAPI();
+var imgProcessor = new Clarifai.App(
+    'Wak0iOj8Y4mrhiKHvwXIzx0aLNzjsYPmAUN90DR5',
+    'KP-2ZhAW5EFxeKFUn5Sd_KOebdgxYvSIPJRoSqGP'
+);
+var googleURL = new GoogleURL({key:'AIzaSyAzz6i6kkgX_I62ZQueX8-ZWOtTfi9Emd8'});
 
+
+//THE BOT
 var Bot = new Twit({
 	consumer_key: TWITTER_CONSUMER_KEY,
 	consumer_secret: TWITTER_CONSUMER_SECRET,
@@ -57,30 +68,68 @@ function BotRetweet() {
             var retweetUser = data.statuses[0].user;
 			Bot.post('statuses/retweet/:id', id, BotRetweeted);
 
-			//get info on one single tweet
-			// Bot.get('statuses/show/:id',{id:'822928111453007872'},function(err,data,res){
-			// 	console.log(data)
-			// });
-
 			function BotRetweeted(error, response) {
 				if (error) {
 					console.log('Bot could not retweet and already answered, : ' + error);
 				}
 				else {
-					// if(tweet.place)
-					// 	Bot.get('geo/id/:id',{id:tweet.place.id},function(err,data,res){
-					// 		console.log(data.bounding_box.coordinates);
-					// 	})
-                    lgProcessor.queryProduct(tweet.text,function(err,products){
-                    	var arrayOfKeyword = products;
-                        yellowPAPI.search(arrayOfKeyword[0],{long:-73.553,lat:45.087},function(err,results){
-							var response = results[0].title + ' at '+results[0].address+'.'+' Their Website is '+ results[0].url;
-                            Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' '+response}, function(err, data, response) {
-                                console.log('Bot retweeted : ' + id.id);
-                                console.log('Bot answered :' + retweetUser.id_str);
+					var imgName ='';
+					if(tweet.entities.media){
+						console.log('image found');
+                        imgProcessor.models.predict(Clarifai.GENERAL_MODEL, tweet.entities.media[0].media_url).then(
+                            function(response) {
+                            	imgName = response.outputs[0].data.concepts[0].name;
+                                var outputString = 'Image: '+ response.outputs[0].data.concepts[0].name +', Probability: '+Math.round(response.outputs[0].data.concepts[0].value *100,-1)+'%.';
+                                yellowPAPI.search(imgName,{long:-73.553,lat:45.087},function(err,results){
+                                    if(err){
+                                        outputString += " Not related to any business";
+										//tweet sent
+                                        Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' '+outputString}, function(err, data, response) {
+                                            console.log('Bot retweeted : ' + id.id);
+                                            console.log('Bot answered :' + retweetUser.id_str);
+                                        });
+                                    }else{
+                                        googleURL.shorten( results[0].url, function( err, shortUrl ) {
+                                            // shortUrl should be http://goo.gl/BzpZ54
+											var url = shortUrl;
+                                            outputString += " May relate to "+results[0].title + ' at '+results[0].address+'. '+ url;
+                                            //tweet sent
+                                            Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' '+outputString}, function(err, data, response) {
+                                                console.log('Bot retweeted : ' + id.id);
+                                                console.log('Bot answered :' + retweetUser.id_str);
+                                            });
+
+                                        });
+                                    }
+                                });
+
+                            },
+                            function(err) {
+                                console.error(err);
+                            }
+                        );
+					}
+					else{
+						console.log('no image found');
+                        lgProcessor.queryProduct(tweet.text,function(err,products){
+                            var arrayOfKeyword = products;
+                            yellowPAPI.search(imgName,{long:-73.553,lat:45.087},function(err,results){
+
                             });
-						});
-					});
+                            yellowPAPI.search(arrayOfKeyword[0],{long:-73.553,lat:45.087},function(err,results){
+                                googleURL.shorten( results[0].url, function( err, shortUrl ) {
+                                    // shortUrl should be http://goo.gl/BzpZ54
+                                    var url = shortUrl
+                                    var response = results[0].title + ' at '+results[0].address+'.'+' Their Website is '+ url;
+                                    Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' '+response}, function(err, data, response) {
+                                        console.log('Bot retweeted : ' + id.id);
+                                        console.log('Bot answered :' + retweetUser.id_str);
+                                    });
+                                });
+
+                            });
+                        });
+                    }
 
 
 				}

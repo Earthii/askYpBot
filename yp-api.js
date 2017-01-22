@@ -23,7 +23,6 @@ class ypAPI {
                 }]
             }
         }, function (error, response, body) {
-            console.log(body)
             let merchants = body.searchResult[0].merchants;
             let results = [];
             for (let i = 0; i < merchants.length; i++) {
@@ -35,7 +34,6 @@ class ypAPI {
                 });
             }
             callback(error, results);
-            console.log(JSON.stringify(results), null, 2);
         });
 
     }
