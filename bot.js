@@ -111,12 +111,11 @@ function BotRetweet() {
                                 var url = shortUrl
                                 var response = 'You should visit ' + results[0].title + ' at ' + results[0].address + '.' + ' More info here: ' + url;
                                 console.log(response);
-                                /*
-                                 Bot.post('statuses/update', {status: '@' + retweetUser.screen_name + ' ' + response}, function (err, data, response) {
-                                 console.log('Bot retweeted : ' + id.id);
-                                 console.log('Bot answered :' + retweetUser.id_str);
-                                 });
-                                 */
+								Bot.post('statuses/update', {status: '@' + retweetUser.screen_name + ' ' + response}, function (err, data, response) {
+								 	console.log('Bot retweeted : ' + id.id);
+								 	console.log('Bot answered :' + retweetUser.id_str);
+								});
+
                             });
 
                         });
