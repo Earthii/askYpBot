@@ -1,10 +1,3 @@
-/*!
- * Bot.js : A Twitter bot that can retweet in response to the tweets matching particluar keyword
- * Version 1.0.0
- * Created by Debashis Barman (http://www.debashisbarman.in)
- * License : http://creativecommons.org/licenses/by-sa/3.0
- */
-
 /* Configure the Twitter API */
 var TWITTER_CONSUMER_KEY = 'uMMIIreJncbEpaJ7A72IL4eAH';
 var TWITTER_CONSUMER_SECRET = 'ak4aTewF6aL7siYyPdlIp03bYmbyG5rkayGSp3DgE0WHk9BRLM';
@@ -12,7 +5,7 @@ var TWITTER_ACCESS_TOKEN = '822836654117359616-LSzhIRqaCxoQA5XHxwZx9p1HHDnW8Lb';
 var TWITTER_ACCESS_TOKEN_SECRET = '7BIFNmZBFPgxyoifuNSFrjJkMBtNay4TQ3c6TAV2ALTmV';
 
 /* Set Twitter search phrase */
-var TWITTER_SEARCH_PHRASE = '#askYP4';
+var TWITTER_SEARCH_PHRASE = '#askYP';
 
 //Dependencies
 var Twit = require('twit');
