@@ -102,6 +102,7 @@ function BotRetweet() {
                 }
                 else {
                     console.log('no image found');
+                    console.log(JSON.stringify(response, null,2));
                     lgProcessor.queryProduct(tweet.text, function (err, products) {
                         var arrayOfKeyword = products;
                         yellowPAPI.search(arrayOfKeyword[0], {long: -73.578915, lat: 45.495291}, function (err, results) {

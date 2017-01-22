@@ -3,7 +3,7 @@ let AlchemyLanguageV1 = require('watson-developer-cloud/alchemy-language/v1');
 class NathanProcessor{
     constructor(api_key){
         this.watson = new AlchemyLanguageV1({
-            api_key: api_key
+            api_key: '836929e582b56ff138ef55896dc5efb959fdd50b'
         });
     }
     queryProduct(string, callback){
@@ -14,7 +14,6 @@ class NathanProcessor{
             for(let i = 0; i < 3 && i < res.keywords.length; i++){
                 keywords.push(res.keywords[i].text);
             }
-            console.log(keywords)
             callback(err, keywords);
         });
     }
