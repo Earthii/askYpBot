@@ -25,11 +25,18 @@ class ypAPI {
             let merchants = body.searchResult[0].merchants;
             let results = [];
             for (let i = 0; i < merchants.length; i++) {
+                let url = '';
+                for(let j = 0; j < merchants[i].urls.length; j++){
+                    if(merchants[i].urls[j].type == 'YPCA_MERCHANT_PAGE'){
+                        url = merchants[i].urls[j];
+                        break;
+                    }
+                }
                 results.push({
                     id: merchants[i].id,
                     title: merchants[i].businessName,
                     address: merchants[i].address.displayLine,
-                    url: merchants[i].urls[0].text
+                    url: url
                 });
             }
             callback(error, results);
@@ -39,3 +46,7 @@ class ypAPI {
 }
 
 module.exports = ypAPI;
+//
+// new ypAPI().search('shoes', {long: -73.578915, lat: 45.495291}, function (err, results) {
+//    console.log(results);
+// });
