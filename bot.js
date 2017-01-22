@@ -12,7 +12,7 @@ var TWITTER_ACCESS_TOKEN = '822836654117359616-LSzhIRqaCxoQA5XHxwZx9p1HHDnW8Lb';
 var TWITTER_ACCESS_TOKEN_SECRET = '7BIFNmZBFPgxyoifuNSFrjJkMBtNay4TQ3c6TAV2ALTmV';
 
 /* Set Twitter search phrase */
-var TWITTER_SEARCH_PHRASE = '#askYP2';
+var TWITTER_SEARCH_PHRASE = '#askYP4';
 
 //Dependencies
 var Twit = require('twit');
@@ -89,6 +89,7 @@ function BotRetweet() {
                                             console.log('Bot retweeted : ' + id.id);
                                             console.log('Bot answered :' + retweetUser.id_str);
                                         });
+
 
                                     });
                                 }
