@@ -6,13 +6,13 @@
  */
 
 /* Configure the Twitter API */
-var TWITTER_CONSUMER_KEY = '1AqwD0kpnPrc9KYepDmJcGWA1';
-var TWITTER_CONSUMER_SECRET = 'Ic5oqlDbwxwLyK4i62jX7r1wyGwDFhFuYcTL3CteLo8gdTLL2N';
-var TWITTER_ACCESS_TOKEN = '822836654117359616-G9BVWUb1PIYHTlIzeWEZOMklfdtpqpg';
-var TWITTER_ACCESS_TOKEN_SECRET = 'KyF2akBMlNOGYpJ59MMhYua5gmYkfggrFOCMe5KmaV6Jf';
+var TWITTER_CONSUMER_KEY = 'uMMIIreJncbEpaJ7A72IL4eAH';
+var TWITTER_CONSUMER_SECRET = 'ak4aTewF6aL7siYyPdlIp03bYmbyG5rkayGSp3DgE0WHk9BRLM';
+var TWITTER_ACCESS_TOKEN = '822836654117359616-LSzhIRqaCxoQA5XHxwZx9p1HHDnW8Lb';
+var TWITTER_ACCESS_TOKEN_SECRET = '7BIFNmZBFPgxyoifuNSFrjJkMBtNay4TQ3c6TAV2ALTmV';
 
 /* Set Twitter search phrase */
-var TWITTER_SEARCH_PHRASE = '#askYP2';
+var TWITTER_SEARCH_PHRASE = '#askYP4';
 
 //Dependencies
 var Twit = require('twit');
@@ -53,7 +53,6 @@ function BotRetweet() {
 		q: TWITTER_SEARCH_PHRASE,
 		result_type: "recent"
 	}
-
 	Bot.get('search/tweets', query, BotGotLatestTweet);
 
 	function BotGotLatestTweet (error, data, response) {
@@ -92,7 +91,7 @@ function BotRetweet() {
                                         googleURL.shorten( results[0].url, function( err, shortUrl ) {
                                             // shortUrl should be http://goo.gl/BzpZ54
 											var url = shortUrl;
-                                            outputString += " May relate to "+results[0].title + ' at '+results[0].address+'. '+ url;
+                                            outputString += " May relate to: "+results[0].title + ' at '+results[0].address+'. '+ url;
                                             //tweet sent
                                             Bot.post('statuses/update', { status: '@'+retweetUser.screen_name+' '+outputString}, function(err, data, response) {
                                                 console.log('Bot retweeted : ' + id.id);
@@ -111,11 +110,9 @@ function BotRetweet() {
 					}
 					else{
 						console.log('no image found');
+
                         lgProcessor.queryProduct(tweet.text,function(err,products){
                             var arrayOfKeyword = products;
-                            yellowPAPI.search(imgName,{long:-73.553,lat:45.087},function(err,results){
-
-                            });
                             yellowPAPI.search(arrayOfKeyword[0],{long:-73.553,lat:45.087},function(err,results){
                                 googleURL.shorten( results[0].url, function( err, shortUrl ) {
                                     // shortUrl should be http://goo.gl/BzpZ54
